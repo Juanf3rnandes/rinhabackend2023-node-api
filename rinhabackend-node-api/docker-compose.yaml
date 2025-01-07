@@ -1,0 +1,46 @@
+version: "3.9"
+
+services: 
+  app1: &app
+    # image: juanf3rnandes/rinhabackend-node-api:latest
+    build: .
+    hostname: app1
+    environment:
+      DB_URL: "postgres://postgres:juan102030@postgres:5432/pessoas"
+      DB_POOL: 35
+      PINO_LOG_LEVEL: "debug"
+      REQ_TIMEOUT: "2000"
+    expose:
+      - "8080"
+    depends_on:
+      - postgres
+    ulimits:
+      nproc: 1000000
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '0.6GB'
+
+  app2:
+    <<: *app
+    hostname: app2
+
+  postgres: 
+    image: postgres:latest
+    container_name: postgres
+    environment: 
+      POSTGRES_DB: pessoas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: juan102030
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.4'
+          memory: '1.5GB'
+
